@@ -42,8 +42,11 @@ public class WeatherAppClient {
 
         try {
             ResponseEntity<Map> responseEntity = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(new HttpHeaders()), Map.class);
+            if (!responseEntity.getStatusCode().is2xxSuccessful()) return locations;
+
             if (!responseEntity.getBody().isEmpty()) {
                 List<LinkedHashMap> results = (List<LinkedHashMap>) responseEntity.getBody().get("results");
+                if (results == null) return locations;
 
                 for (LinkedHashMap result : results) {
                     Location location = objectMapper.convertValue(result, Location.class);
