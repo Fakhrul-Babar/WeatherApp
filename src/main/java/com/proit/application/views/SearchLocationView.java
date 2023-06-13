@@ -1,5 +1,6 @@
 package com.proit.application.views;
 
+import com.proit.application.service.WeatherAppClient;
 import com.proit.application.views.layout.MainLayout;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
@@ -16,20 +17,30 @@ import com.vaadin.flow.router.RouteAlias;
 public class SearchLocationView extends HorizontalLayout {
 
     private TextField name;
-    private Button sayHello;
+    private Button findLocation;
+    private Button findWeatherForecust;
 
-    public SearchLocationView() {
-        name = new TextField("Your name");
-        sayHello = new Button("Say hello");
-        sayHello.addClickListener(e -> {
-            Notification.show("Hello " + name.getValue()).setPosition(Notification.Position.TOP_END);
+    private final WeatherAppClient weatherAppClient;
+
+    public SearchLocationView(WeatherAppClient weatherAppClient) {
+        this.weatherAppClient = weatherAppClient;
+        name = new TextField("City");
+        findLocation = new Button("Get Location");
+        findLocation.addClickListener(e -> {
+            Notification.show("Get Location by city: " + name.getValue()).setPosition(Notification.Position.TOP_END);
+            weatherAppClient.getLocations(name.getValue());
         });
-        sayHello.addClickShortcut(Key.ENTER);
+        findLocation.addClickShortcut(Key.ENTER);
+
+        findWeatherForecust = new Button("Get Weather Forecast");
+        findWeatherForecust.addClickListener(e -> {
+            weatherAppClient.getWeatherForecastData(23.7104, 90.40744);
+        });
 
         setMargin(true);
-        setVerticalComponentAlignment(Alignment.END, name, sayHello);
+        setVerticalComponentAlignment(Alignment.END, name, findLocation);
 
-        add(name, sayHello);
+        add(name, findLocation, findWeatherForecust);
     }
 
 }
