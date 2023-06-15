@@ -16,11 +16,13 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import jakarta.annotation.security.PermitAll;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 @Slf4j
+@PermitAll
 @PageTitle("Main")
 @Route(value = "search", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)

@@ -1,12 +1,12 @@
 package com.proit.application.views.layout;
 
+import com.proit.application.security.AuthenticationService;
 import com.proit.application.views.LoginView;
 import com.proit.application.views.SearchLocationView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -15,7 +15,10 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 
 public class MainLayout extends AppLayout {
 
-    public MainLayout() {
+    private final AuthenticationService authenticationService;
+
+    public MainLayout(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
         createHeader();
         createDrawer();
     }
@@ -26,12 +29,13 @@ public class MainLayout extends AppLayout {
                 LumoUtility.FontSize.LARGE,
                 LumoUtility.Margin.MEDIUM);
 
-        Button logout = new Button("Log out", e -> Notification.show("Not implemented yet", 5000, Notification.Position.TOP_END)); // <2>
+        String u = authenticationService.getAuthenticatedUser().getUsername();
+        Button logout = new Button("Log out " + u, e -> authenticationService.logout());
 
         var header = new HorizontalLayout(new DrawerToggle(), logo, logout);
 
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
-        header.expand(logo); // <4>
+        header.expand(logo);
         header.setWidthFull();
         header.addClassNames(
                 LumoUtility.Padding.Vertical.NONE,
