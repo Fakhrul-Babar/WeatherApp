@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -13,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class Hourly {
-    private List<String> time;
+    private List<LocalDateTime> time;
 
     @JsonProperty("temperature_2m")
     private List<Double> temperature2m;

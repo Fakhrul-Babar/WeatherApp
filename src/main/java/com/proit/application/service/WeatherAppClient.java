@@ -3,6 +3,7 @@ package com.proit.application.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proit.application.domain.Location;
 import com.proit.application.domain.WeatherForecast;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -16,11 +17,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class WeatherAppClient {
     private final String LOCATION_API = "https://geocoding-api.open-meteo.com/v1/search?name=%s&count=50&language=en&format=json";
     private final String WEATHER_FORECAST_API = "https://api.open-meteo.com/v1/forecast?" +
             "latitude=%s&longitude=%s" +
+            "&current_weather=true" +
             "&hourly=temperature_2m,apparent_temperature,windspeed_10m,weathercode,precipitation_probability,rain" +
             "&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max,windspeed_10m_max,rain_sum" +
             "&timezone=auto";
@@ -61,10 +64,12 @@ public class WeatherAppClient {
     }
 
     public WeatherForecast getWeatherForecastData(double latitude, double longitude) {
+        log.info("Weather info for Latitude: {} & Longitude: {}", latitude, longitude);
         String url = String.format(WEATHER_FORECAST_API, latitude, longitude);
 
         try {
             ResponseEntity<WeatherForecast> responseEntity = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(new HttpHeaders()), WeatherForecast.class);
+            log.info("Weather info: {}", responseEntity.getBody());
             return responseEntity.getBody();
         } catch (HttpClientErrorException e) {
             e.printStackTrace();

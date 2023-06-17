@@ -14,6 +14,9 @@ public class WeatherForecast {
     private Float latitude;
     private Float longitude;
 
+    @JsonProperty("current_weather")
+    private CurrentWeather currentWeather;
+
     @JsonProperty("generationtime_ms")
     private Float generationtimeMs;
 

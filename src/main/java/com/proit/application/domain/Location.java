@@ -28,4 +28,11 @@ public class Location {
     @JsonProperty("country_id")
     private Long countryId;
     private String country;
+
+    private String admin1;
+    private String admin2;
+
+    public String getAdminDetails() {
+        return new StringBuilder(getAdmin2() != null ? getAdmin2().concat(", ") : "").append(getAdmin1()).toString();
+    }
 }

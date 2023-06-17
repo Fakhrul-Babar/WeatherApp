@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -13,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class Daily {
-    private List<String> time;
+    private List<LocalDate> time;
     private List<Integer> weathercode;
 
     @JsonProperty("temperature_2m_max")
