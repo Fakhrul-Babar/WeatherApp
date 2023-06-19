@@ -12,7 +12,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 
 @PageTitle("Login | Weather App")
-@Route(value = "login")
+@Route(value = "login", layout = MainLayout.class)
 @AnonymousAllowed
 public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 

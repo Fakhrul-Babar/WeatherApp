@@ -2,6 +2,7 @@ package com.proit.application.views;
 
 import com.proit.application.domain.Location;
 import com.proit.application.domain.WeatherForecast;
+import com.proit.application.security.AuthenticationService;
 import com.proit.application.service.WeatherAppClient;
 import com.proit.application.views.layout.MainLayout;
 import com.vaadin.flow.component.Component;
@@ -10,6 +11,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -19,13 +21,13 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import jakarta.annotation.security.PermitAll;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 @Slf4j
-@PermitAll
+@AnonymousAllowed
 @PageTitle("Main")
 @Route(value = "search", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
@@ -39,9 +41,14 @@ public class SearchLocationView extends VerticalLayout {
     private DailyForecastView dailyForecastView;
 
     private final WeatherAppClient weatherAppClient;
+    private final AuthenticationService authenticationService;
 
-    public SearchLocationView(WeatherAppClient weatherAppClient) {
+    public SearchLocationView(
+            WeatherAppClient weatherAppClient,
+            AuthenticationService authenticationService
+    ) {
         this.weatherAppClient = weatherAppClient;
+        this.authenticationService = authenticationService;
 
         addClassName("list-view");
         setSizeFull();
@@ -97,15 +104,21 @@ public class SearchLocationView extends VerticalLayout {
 
         // location row select action
         grid.asSingleSelect().addValueChangeListener(event -> {
-                    dailyForecastView.showWeatherInfo(null, null);
+            if(!authenticationService.isUserLogIn()) {
+                Notification authNotification = Notification.show("Please login to view weather forecast");
+                authNotification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                authNotification.setPosition(Notification.Position.TOP_CENTER);
+                return;
+            }
+                dailyForecastView.showWeatherInfo(null, null);
 
-                    Location location = event.getValue();
-                    log.info("Selected location: {}", location);
-                    if(location == null) return;
-                    WeatherForecast weatherForecastData = weatherAppClient.getWeatherForecastData(location.getLatitude(), location.getLongitude());
+                Location location = event.getValue();
+                log.info("Selected location: {}", location);
+                if (location == null) return;
+                WeatherForecast weatherForecastData = weatherAppClient.getWeatherForecastData(location.getLatitude(), location.getLongitude());
 
-                    dailyForecastView.showWeatherInfo(weatherForecastData, location);
-                }
+                dailyForecastView.showWeatherInfo(weatherForecastData, location);
+            }
         );
     }
 
@@ -158,6 +171,12 @@ public class SearchLocationView extends VerticalLayout {
 
     private void addLocationToUserFavorite(Location location) {
         log.info("Select location: {} -- for add to favorite", location);
+        if(!authenticationService.isUserLogIn()) {
+            Notification authNotification = Notification.show("Please login to add location as favorite");
+            authNotification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            authNotification.setPosition(Notification.Position.TOP_CENTER);
+            return;
+        }
         Notification.show("Not Implemented yet.").setPosition(Notification.Position.TOP_CENTER);
     }
 
