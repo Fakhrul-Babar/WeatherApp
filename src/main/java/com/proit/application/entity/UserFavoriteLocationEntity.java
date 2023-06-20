@@ -25,4 +25,7 @@ public class UserFavoriteLocationEntity {
     private UserEntity user;
 
     private Long locationId;
+    private String locationDetails;
+    private Double latitude;
+    private Double longitude;
 }

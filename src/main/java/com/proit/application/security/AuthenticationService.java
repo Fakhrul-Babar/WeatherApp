@@ -13,7 +13,11 @@ public record AuthenticationService(AuthenticationContext authenticationContext)
         return authenticationContext.getAuthenticatedUser(UserDetails.class);
     }
 
-    public boolean isUserLogIn(){
+    public String getLogedInUsername() {
+        return getAuthenticatedUser().map(UserDetails::getUsername).get();
+    }
+
+    public boolean isUserLogIn() {
         return getAuthenticatedUser().isPresent();
     }
 

@@ -3,6 +3,7 @@ package com.proit.application.views;
 import com.proit.application.domain.Location;
 import com.proit.application.domain.WeatherForecast;
 import com.proit.application.security.AuthenticationService;
+import com.proit.application.service.UserFavoriteLocationService;
 import com.proit.application.service.WeatherAppClient;
 import com.proit.application.views.layout.MainLayout;
 import com.vaadin.flow.component.Component;
@@ -42,13 +43,15 @@ public class SearchLocationView extends VerticalLayout {
 
     private final WeatherAppClient weatherAppClient;
     private final AuthenticationService authenticationService;
+    private final UserFavoriteLocationService userFavoriteLocationService;
 
     public SearchLocationView(
             WeatherAppClient weatherAppClient,
-            AuthenticationService authenticationService
-    ) {
+            AuthenticationService authenticationService,
+            UserFavoriteLocationService userFavoriteLocationService) {
         this.weatherAppClient = weatherAppClient;
         this.authenticationService = authenticationService;
+        this.userFavoriteLocationService = userFavoriteLocationService;
 
         addClassName("list-view");
         setSizeFull();
@@ -104,21 +107,21 @@ public class SearchLocationView extends VerticalLayout {
 
         // location row select action
         grid.asSingleSelect().addValueChangeListener(event -> {
-            if(!authenticationService.isUserLogIn()) {
-                Notification authNotification = Notification.show("Please login to view weather forecast");
-                authNotification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                authNotification.setPosition(Notification.Position.TOP_CENTER);
-                return;
-            }
-                dailyForecastView.showWeatherInfo(null, null);
+                    if (!authenticationService.isUserLogIn()) {
+                        Notification authNotification = Notification.show("Please login to view weather forecast");
+                        authNotification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        authNotification.setPosition(Notification.Position.TOP_CENTER);
+                        return;
+                    }
+                    dailyForecastView.showWeatherInfo(null, null);
 
-                Location location = event.getValue();
-                log.info("Selected location: {}", location);
-                if (location == null) return;
-                WeatherForecast weatherForecastData = weatherAppClient.getWeatherForecastData(location.getLatitude(), location.getLongitude());
+                    Location location = event.getValue();
+                    log.info("Selected location: {}", location);
+                    if (location == null) return;
+                    WeatherForecast weatherForecastData = weatherAppClient.getWeatherForecastData(location.getLatitude(), location.getLongitude());
 
-                dailyForecastView.showWeatherInfo(weatherForecastData, location);
-            }
+                    dailyForecastView.showWeatherInfo(weatherForecastData, location);
+                }
         );
     }
 
@@ -171,13 +174,19 @@ public class SearchLocationView extends VerticalLayout {
 
     private void addLocationToUserFavorite(Location location) {
         log.info("Select location: {} -- for add to favorite", location);
-        if(!authenticationService.isUserLogIn()) {
+        if (!authenticationService.isUserLogIn()) {
             Notification authNotification = Notification.show("Please login to add location as favorite");
             authNotification.addThemeVariants(NotificationVariant.LUMO_ERROR);
             authNotification.setPosition(Notification.Position.TOP_CENTER);
             return;
         }
-        Notification.show("Not Implemented yet.").setPosition(Notification.Position.TOP_CENTER);
+
+        if (userFavoriteLocationService.existsByLocationIdAndUsername(location.getId(), authenticationService.getLogedInUsername())) {
+            Notification.show("This location is already added as favorite").setPosition(Notification.Position.TOP_CENTER);
+            return;
+        }
+        userFavoriteLocationService.saveUserFavoriteLocation(location);
+        Notification.show("Location '" + location.getAdminDetails() + "' is added as favorite").setPosition(Notification.Position.TOP_CENTER);
     }
 
 }
