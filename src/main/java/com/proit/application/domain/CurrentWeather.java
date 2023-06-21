@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,5 +20,5 @@ public class CurrentWeather {
 
     @JsonProperty("is_day")
     private Integer isDay;
-    private String time;
+    private LocalDateTime time;
 }

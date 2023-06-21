@@ -29,7 +29,7 @@ import java.util.List;
 
 @Slf4j
 @AnonymousAllowed
-@PageTitle("Main")
+@PageTitle("Search Location | Weather App")
 @Route(value = "search", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
 public class SearchLocationView extends VerticalLayout {

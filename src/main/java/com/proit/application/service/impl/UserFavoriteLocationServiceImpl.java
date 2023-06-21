@@ -10,6 +10,8 @@ import com.proit.application.service.UserService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserFavoriteLocationServiceImpl implements UserFavoriteLocationService {
 
@@ -24,6 +26,11 @@ public class UserFavoriteLocationServiceImpl implements UserFavoriteLocationServ
         this.userFavoriteLocationRepository = userFavoriteLocationRepository;
         this.userService = userService;
         this.authenticationService = authenticationService;
+    }
+
+    @Override
+    public List<UserFavoriteLocationEntity> getFavoriteLocationByUser(String username) {
+        return userFavoriteLocationRepository.findAllByUser_Username(username);
     }
 
     @Override
@@ -48,5 +55,15 @@ public class UserFavoriteLocationServiceImpl implements UserFavoriteLocationServ
     @Override
     public boolean existsByLocationIdAndUsername(Long locationId, String username) {
         return userFavoriteLocationRepository.existsByLocationIdAndUser_Username(locationId, username);
+    }
+
+    @Override
+    public long countByLocationIdAndUsername(Long locationId, String username) {
+        return userFavoriteLocationRepository.countByLocationIdAndUser_Username(locationId, username);
+    }
+
+    @Override
+    public long countByUsername(String username) {
+        return userFavoriteLocationRepository.countByUser_Username(username);
     }
 }

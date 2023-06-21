@@ -1,6 +1,7 @@
 package com.proit.application.views.layout;
 
 import com.proit.application.security.AuthenticationService;
+import com.proit.application.views.FavoriteLocationView;
 import com.proit.application.views.SearchLocationView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -52,7 +53,8 @@ public class MainLayout extends AppLayout {
 
     private void createDrawer() {
         addToDrawer(new VerticalLayout(
-                new RouterLink("Search Location", SearchLocationView.class)
+                new RouterLink("Search Location", SearchLocationView.class),
+                new RouterLink("Favorite Location", FavoriteLocationView.class)
         ));
     }
 }
