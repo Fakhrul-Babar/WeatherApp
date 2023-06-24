@@ -39,7 +39,7 @@ public class SearchLocationView extends VerticalLayout {
 
     private TextField gridFilterTextField = new TextField();
 
-    private DailyForecastView dailyForecastView;
+    private WeatherForecastView dailyForecastView;
 
     private final WeatherAppClient weatherAppClient;
     private final AuthenticationService authenticationService;
@@ -58,7 +58,7 @@ public class SearchLocationView extends VerticalLayout {
 
         configureGrid();
 
-        dailyForecastView = new DailyForecastView();
+        dailyForecastView = new WeatherForecastView();
         dailyForecastView.setSizeFull();
         dailyForecastView.showWeatherInfo(null, null);
 

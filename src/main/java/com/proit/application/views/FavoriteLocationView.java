@@ -7,11 +7,11 @@ import com.proit.application.service.UserFavoriteLocationService;
 import com.proit.application.service.WeatherAppClient;
 import com.proit.application.util.WeatherUtil;
 import com.proit.application.views.layout.MainLayout;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H4;
-import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -35,6 +35,7 @@ public class FavoriteLocationView extends VerticalLayout {
     private final WeatherAppClient weatherAppClient;
 
     Div container;
+    String degreeSymbol = "\u00B0";
 
     public FavoriteLocationView(
             AuthenticationService authenticationService,
@@ -47,7 +48,7 @@ public class FavoriteLocationView extends VerticalLayout {
 
         // Create the main div container
         container = new Div();
-        container.addClassName("fav-weather-container");
+//        container.addClassName("fav-weather-container");
 
         // Generate and populate the weather data
         createFavoriteLocationContent(container);
@@ -60,10 +61,81 @@ public class FavoriteLocationView extends VerticalLayout {
         List<UserFavoriteLocationEntity> favoriteLocations = userFavoriteLocationService.getFavoriteLocationByUser(authenticationService.getLogedInUsername());
 
         for (UserFavoriteLocationEntity favoriteLocation : favoriteLocations) {
-            Div weatherDiv = createWeatherDiv(favoriteLocation);
+            Component weatherDiv = createCurrentWeatherContent(favoriteLocation);
             container.add(weatherDiv);
         }
     }
+
+    private Component createCurrentWeatherContent(UserFavoriteLocationEntity favoriteLocation) {
+        CurrentWeather currentWeather = weatherAppClient.getCurrentWeatherForecastData(favoriteLocation.getLatitude(), favoriteLocation.getLongitude());
+
+        Div dayDiv = new Div();
+        dayDiv.addClassName("day");
+        dayDiv.setText(currentWeather.getTime().getDayOfWeek().name());
+
+        Div dateDiv = new Div();
+        dateDiv.addClassName("date");
+        dateDiv.setText(currentWeather.getTime().format(DateTimeFormatter.ofPattern("MMMM d")));
+
+        Div forecastHeaderDiv = new Div();
+        forecastHeaderDiv.addClassName("forecast-header");
+        forecastHeaderDiv.add(dayDiv, dateDiv);
+
+        Div forecastContentDiv = new Div();
+        forecastContentDiv.addClassName("forecast-content");
+
+        Div locationDiv = new Div();
+        locationDiv.addClassName("location");
+        locationDiv.setText(favoriteLocation.getLocationDetails());
+
+        Div degreeDiv = new Div();
+        degreeDiv.addClassName("degree");
+
+        Div numDiv = new Div();
+        numDiv.addClassName("num");
+        numDiv.setText(currentWeather.getTemperature() + " " + degreeSymbol + "C");
+
+        Div forecastIconDiv = new Div();
+        forecastIconDiv.addClassName("forecast-icon");
+        Image forecastImage = new Image("icons/icon-1.svg", "Weather Icon");
+        forecastImage.setWidth("90px");
+
+        forecastIconDiv.add(forecastImage);
+
+        degreeDiv.add(numDiv, forecastIconDiv);
+
+        Span umbrellaSpan = new Span();
+        umbrellaSpan.add(new Image("icon-umberella.png", "Umbrella Icon"));
+        umbrellaSpan.add("20%");
+
+        Span windSpan = new Span();
+        windSpan.add(new Image("icon-wind.png", "Wind Icon"));
+        windSpan.add(currentWeather.getWindspeed() + "km/h");
+
+        Span compassSpan = new Span();
+        compassSpan.add(new Image("icon-compass.png", "Compass Icon"));
+        compassSpan.add("East");
+
+        forecastContentDiv.add(locationDiv, degreeDiv, umbrellaSpan, windSpan, compassSpan);
+
+        Div todayDiv = new Div();
+        todayDiv.addClassName("today");
+        todayDiv.addClassName("forecast");
+        todayDiv.add(forecastHeaderDiv, forecastContentDiv);
+
+        Div forecastContainerDiv = new Div();
+        forecastContainerDiv.addClassName("forecast-container");
+        forecastContainerDiv.add(todayDiv);
+
+        Div containerDiv = new Div();
+        containerDiv.addClassName("container");
+        containerDiv.getStyle().set("margin-top", "20px");
+        containerDiv.add(forecastContainerDiv);
+        containerDiv.setWidth(33, Unit.PERCENTAGE);
+
+        return containerDiv;
+    }
+
 
     private Div createWeatherDiv(UserFavoriteLocationEntity favoriteLocation) {
         // Create a div for weather data
